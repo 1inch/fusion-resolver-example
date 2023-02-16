@@ -1,6 +1,7 @@
 import {BigNumber, Contract, Signer} from 'ethers'
 import {ethers} from 'hardhat'
 import ERC20ABI from '../abi/ERC20.abi.json'
+import {UNLIMITED_AMOUNT} from './constants'
 
 export async function approve(
     signer: Signer,
@@ -29,4 +30,15 @@ export async function balanceOf(
     const contract = new Contract(token, ERC20ABI, ethers.provider)
 
     return contract.balanceOf(address)
+}
+
+export function encodeInfinityApprove(spender: string): string {
+    return (
+        '0x095ea7b3' +
+        spender.substring(2).padStart(64, '0') +
+        BigNumber.from(UNLIMITED_AMOUNT)
+            .toHexString()
+            .substring(2)
+            .padStart(64, '0')
+    )
 }
