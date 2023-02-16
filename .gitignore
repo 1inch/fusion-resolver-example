@@ -1,0 +1,17 @@
+build
+artifacts
+cache
+**/solcInputs
+
+node_modules
+
+coverage
+coverage.json
+.coverage_contracts
+.coverage_artifacts
+
+.idea
+
+.env
+
+typechain
