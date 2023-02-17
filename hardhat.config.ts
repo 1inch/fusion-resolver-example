@@ -4,6 +4,7 @@ import {config as dotEnvConfig} from 'dotenv'
 
 import 'hardhat-typechain'
 import 'hardhat-jest-plugin'
+import 'hardhat-tracer'
 import {HardhatUserConfig} from 'hardhat/types'
 
 dotEnvConfig()

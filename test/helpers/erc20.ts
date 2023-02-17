@@ -32,6 +32,12 @@ export async function balanceOf(
     return contract.balanceOf(address)
 }
 
+export async function tokenName(token: string): Promise<string> {
+    const contract = new Contract(token, ERC20ABI, ethers.provider)
+
+    return contract.name()
+}
+
 export function encodeInfinityApprove(spender: string): string {
     return (
         '0x095ea7b3' +

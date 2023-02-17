@@ -1,4 +1,5 @@
 import {NetworkEnum} from '@1inch/fusion-sdk'
+import {ChainId} from '@1inch/permit-signed-approvals-utils'
 
 export type OneInchSwapParams = {
     fromToken: string
@@ -22,6 +23,16 @@ export type OneInchApiSwapResponse = {
     fromTokenAmount: string
     protocols: PathView[][][]
     tx: Tx
+}
+
+export type PermitParams = {
+    userPrivateKey: string
+    spender: string
+    value: string
+    nonce: number
+    tokenName: string
+    tokenAddress: string
+    chainId: ChainId
 }
 
 export type PathView = {

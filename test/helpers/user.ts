@@ -9,6 +9,7 @@ import {
     TransactionRequest,
     TransactionResponse
 } from '@ethersproject/abstract-provider'
+import {getPermitNonce} from './permit'
 
 export class User {
     public readonly address: string
@@ -18,6 +19,10 @@ export class User {
     constructor(public readonly privateKey: Buffer) {
         this.address = ethers.utils.computeAddress(privateKey)
         this.signer = new Wallet(privateKey, ethers.provider)
+    }
+
+    get PK(): string {
+        return '0x' + this.privateKey.toString('hex')
     }
 
     sendTransaction(
@@ -45,7 +50,8 @@ export class User {
             DAI: '0xf977814e90da44bfa03b6295a0616a897441acec',
             USDT: '0x5041ed759Dd4aFc3a72b8192C143F72f4724081A',
             USDC: '0x5041ed759Dd4aFc3a72b8192C143F72f4724081A',
-            WETH: '0x8EB8a3b98659Cce290402893d0123abb75E3ab28'
+            WETH: '0x8EB8a3b98659Cce290402893d0123abb75E3ab28',
+            '1INCH': '0xF977814e90dA44bFA03b6295A0616a897441aceC'
         }
 
         const tokenAddress = TOKENS[symbol]
@@ -76,6 +82,13 @@ export class User {
         amount: string
     ): Promise<void> {
         return approve(this.signer, tokenAddress, spender, amount)
+    }
+
+    async getPermitNonce(
+        tokenSymbol: string,
+        spender: string
+    ): Promise<BigNumber> {
+        return getPermitNonce(TOKENS[tokenSymbol], spender)
     }
 
     async balance(symbol: string): Promise<BigNumber> {
