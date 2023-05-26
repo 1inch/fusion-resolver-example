@@ -47,7 +47,7 @@ export class User {
 
     async donorToken(symbol: string, amount: string): Promise<void> {
         const donors: Record<string, string> = {
-            DAI: '0xf977814e90da44bfa03b6295a0616a897441acec',
+            DAI: '0x075e72a5eDf65F0A5f44699c7654C1a76941Ddc8',
             USDT: '0x5041ed759Dd4aFc3a72b8192C143F72f4724081A',
             USDC: '0x5041ed759Dd4aFc3a72b8192C143F72f4724081A',
             WETH: '0x8EB8a3b98659Cce290402893d0123abb75E3ab28',
