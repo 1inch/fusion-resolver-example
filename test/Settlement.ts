@@ -19,6 +19,7 @@ import {OneInchApi} from './helpers/1inch'
 import {buildDaiLikePermit, buildPermit} from './helpers/permit'
 import {ChainId} from '@1inch/permit-signed-approvals-utils'
 import {LimitOrderContract} from '../../fusion-sdk/dist/limit-order-contract/limit-order-contract'
+import * as process from 'process';
 
 describe('Settle Orders', function() {
     let resolverContract: ResolverExample

@@ -12,7 +12,7 @@ dotEnvConfig()
 const config: HardhatUserConfig = {
     defaultNetwork: 'hardhat',
     solidity: {
-        compilers: [{version: '0.8.23', settings: {}}]
+        compilers: [{version: '0.8.20', settings: {}}]
     },
     networks: {
         hardhat: {

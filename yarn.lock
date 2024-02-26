@@ -2,25 +2,6 @@
 # yarn lockfile v1
 
 
-"@1inch/delegating@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@1inch/delegating/-/delegating-1.1.0.tgz#d7a14c5033ffa297e92d78c96b71aecc5162795f"
-  integrity sha512-7FGsu7xRYy/hEhOmlj60rJ4yrhtEWPX6ikqq7dbadWZpdqg+Mfe3rHOUZ2sV/YgRLZu4N+VDNzKhv0mws/oo8g==
-  dependencies:
-    "@1inch/farming" "3.2.0"
-    "@1inch/solidity-utils" "3.5.5"
-    "@1inch/token-plugins" "1.3.0"
-    "@openzeppelin/contracts" "5.0.1"
-
-"@1inch/farming@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@1inch/farming/-/farming-3.2.0.tgz#0091a713f7df3c99050e7a98b5d168ddc83fb3de"
-  integrity sha512-5XM2hH5fC5pkCYW6diCl2/TuaitPHQbkqfIOFgXyBUFqKey9+ZaKG/qtKTtS8r2S2SACjUiM54lczVMw4meZfg==
-  dependencies:
-    "@1inch/solidity-utils" "3.5.5"
-    "@1inch/token-plugins" "1.3.0"
-    "@openzeppelin/contracts" "5.0.1"
-
 "@1inch/fusion-sdk@^0.1.14":
   version "0.1.14"
   resolved "https://registry.yarnpkg.com/@1inch/fusion-sdk/-/fusion-sdk-0.1.14.tgz#7bf0e38bee3602d30eb0adb9a084a934e1f70ff4"
@@ -50,24 +31,6 @@
     "@metamask/eth-sig-util" "^4.0.1"
     web3 "^1.5.1"
     web3-utils "^1.5.1"
-
-"@1inch/solidity-utils@3.5.5":
-  version "3.5.5"
-  resolved "https://registry.yarnpkg.com/@1inch/solidity-utils/-/solidity-utils-3.5.5.tgz#14353aa36270e4213927c7de31088953aa277a25"
-  integrity sha512-uX9fzLLxQIvXB4gIczTZ11C2tRrqswJsXV7WNhdPn5CZnCrp8gyBGnuxLjEbY1jZK+NPs2AtZB7FD+/+0ZN+Kg==
-  dependencies:
-    "@metamask/eth-sig-util" "7.0.1"
-    "@nomicfoundation/hardhat-ethers" "3.0.5"
-    "@nomicfoundation/hardhat-network-helpers" "1.0.10"
-    "@nomicfoundation/hardhat-verify" "2.0.2"
-    "@openzeppelin/contracts" "5.0.1"
-    "@uniswap/permit2-sdk" "1.2.0"
-    chai "4.3.10"
-    dotenv "16.3.1"
-    ethereumjs-util "7.1.5"
-    ethers "6.9.0"
-    hardhat "2.19.2"
-    hardhat-deploy "0.11.44"
 
 "@1inch/solidity-utils@3.7.1":
   version "3.7.1"
@@ -106,24 +69,6 @@
     hardhat "2.19.4"
     hardhat-deploy "0.11.45"
     mocha-chai-jest-snapshot "1.1.4"
-
-"@1inch/st1inch@2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@1inch/st1inch/-/st1inch-2.2.0.tgz#3dc39ee49d6954613dc951233afdd0c766864507"
-  integrity sha512-bsle68chQS/d2K1//1S6u9g/Yq3so1qtuQEXIJw9vs74lZbdpLUcgMTQ9MTmGaCfs4cn2Da2MmTKSLX/yXMnog==
-  dependencies:
-    "@1inch/farming" "3.2.0"
-    "@1inch/solidity-utils" "3.5.5"
-    "@1inch/token-plugins" "1.3.0"
-    "@openzeppelin/contracts" "5.0.1"
-
-"@1inch/token-plugins@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@1inch/token-plugins/-/token-plugins-1.3.0.tgz#365d50d4953225816a4749301150c6612b13e874"
-  integrity sha512-Um/8GKAC2Q2C6sITmGj+zr1xiJ3/jPtR/FllwMsDrdfEr7+AVbKH+GL755A7/MS8qz2Df10gSS8iz9Dj/N7/0g==
-  dependencies:
-    "@1inch/solidity-utils" "3.5.5"
-    "@openzeppelin/contracts" "5.0.1"
 
 "@aashutoshrathi/word-wrap@^1.2.3":
   version "1.2.6"
@@ -1958,21 +1903,6 @@
   integrity sha512-a35iVD4ycF6AoTfllAnKm96IPIzzHpgKX/ep4oKc2bsUKFfMlacWdyntgC/7d5blyCTXfFssgNAvXDZfzNWVGQ==
   dependencies:
     ethereumjs-util "^7.1.4"
-
-"@nomicfoundation/hardhat-verify@2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@nomicfoundation/hardhat-verify/-/hardhat-verify-2.0.2.tgz#085f8509a335db44ea3bf39a8561f1ce0462fea2"
-  integrity sha512-SXmLPHrfh801m0Dj/8v4stAM6OI0tFktDlWe1pn3k43bCCjn5TGqcVy7hCtauG8/AlQWNZhR+01qTovSSVTvXQ==
-  dependencies:
-    "@ethersproject/abi" "^5.1.2"
-    "@ethersproject/address" "^5.0.2"
-    cbor "^8.1.0"
-    chalk "^2.4.2"
-    debug "^4.1.1"
-    lodash.clonedeep "^4.5.0"
-    semver "^6.3.0"
-    table "^6.8.0"
-    undici "^5.14.0"
 
 "@nomicfoundation/hardhat-verify@2.0.3":
   version "2.0.3"
@@ -4519,19 +4449,6 @@ chai-as-promised@^7.1.1:
   dependencies:
     check-error "^1.0.2"
 
-chai@4.3.10:
-  version "4.3.10"
-  resolved "https://registry.yarnpkg.com/chai/-/chai-4.3.10.tgz#d784cec635e3b7e2ffb66446a63b4e33bd390384"
-  integrity sha512-0UXG04VuVbruMUYbJ6JctvH0YnC/4q3/AkT18q4NaITo91CUm0liMS9VqzT9vZhVQ/1eqPanMWjBM+Juhfb/9g==
-  dependencies:
-    assertion-error "^1.1.0"
-    check-error "^1.0.3"
-    deep-eql "^4.1.3"
-    get-func-name "^2.0.2"
-    loupe "^2.3.6"
-    pathval "^1.1.1"
-    type-detect "^4.0.8"
-
 chai@4.3.7:
   version "4.3.7"
   resolved "https://registry.yarnpkg.com/chai/-/chai-4.3.7.tgz#ec63f6df01829088e8bf55fca839bcd464a8ec51"
@@ -6623,19 +6540,6 @@ ethers@6.10.0:
     tslib "2.4.0"
     ws "8.5.0"
 
-ethers@6.9.0:
-  version "6.9.0"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.9.0.tgz#a4534bdcdfde306aee94ef32f3d5c70d7e33fcb9"
-  integrity sha512-pmfNyQzc2mseLe91FnT2vmNaTt8dDzhxZ/xItAV7uGsF4dI4ek2ufMu3rAkgQETL/TIs0GS5A+U05g9QyWnv3Q==
-  dependencies:
-    "@adraffy/ens-normalize" "1.10.0"
-    "@noble/curves" "1.2.0"
-    "@noble/hashes" "1.3.2"
-    "@types/node" "18.15.13"
-    aes-js "4.0.0-beta.5"
-    tslib "2.4.0"
-    ws "8.5.0"
-
 ethers@6.9.2:
   version "6.9.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.9.2.tgz#6f4632f62e2350fa8354ff28624027a175ef85a4"
@@ -7838,36 +7742,6 @@ hardhat-deploy@0.11.20:
     qs "^6.9.4"
     zksync-web3 "^0.8.1"
 
-hardhat-deploy@0.11.44:
-  version "0.11.44"
-  resolved "https://registry.yarnpkg.com/hardhat-deploy/-/hardhat-deploy-0.11.44.tgz#a7a771a675a3837ce4c321f2c18d4b6fa1ed03a0"
-  integrity sha512-kAkCvTYPpdIvnWCc3F0xg3AbVsa/SgH9aePPO7e7nHUOkg07LGKuknU/UaVAfWwHe7Zs57pQIAolAQyKI+mnXw==
-  dependencies:
-    "@ethersproject/abi" "^5.7.0"
-    "@ethersproject/abstract-signer" "^5.7.0"
-    "@ethersproject/address" "^5.7.0"
-    "@ethersproject/bignumber" "^5.7.0"
-    "@ethersproject/bytes" "^5.7.0"
-    "@ethersproject/constants" "^5.7.0"
-    "@ethersproject/contracts" "^5.7.0"
-    "@ethersproject/providers" "^5.7.2"
-    "@ethersproject/solidity" "^5.7.0"
-    "@ethersproject/transactions" "^5.7.0"
-    "@ethersproject/wallet" "^5.7.0"
-    "@types/qs" "^6.9.7"
-    axios "^0.21.1"
-    chalk "^4.1.2"
-    chokidar "^3.5.2"
-    debug "^4.3.2"
-    enquirer "^2.3.6"
-    ethers "^5.7.0"
-    form-data "^4.0.0"
-    fs-extra "^10.0.0"
-    match-all "^1.2.6"
-    murmur-128 "^0.2.1"
-    qs "^6.9.4"
-    zksync-web3 "^0.14.3"
-
 hardhat-deploy@0.11.45:
   version "0.11.45"
   resolved "https://registry.yarnpkg.com/hardhat-deploy/-/hardhat-deploy-0.11.45.tgz#bed86118175a38a03bb58aba2ce1ed5e80a20bc8"
@@ -7982,60 +7856,6 @@ hardhat@2.12.2:
     stacktrace-parser "^0.1.10"
     tsort "0.0.1"
     undici "^5.4.0"
-    uuid "^8.3.2"
-    ws "^7.4.6"
-
-hardhat@2.19.2:
-  version "2.19.2"
-  resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.19.2.tgz#815819e4efd234941d495decb718b358d572e2c8"
-  integrity sha512-CRU3+0Cc8Qh9UpxKd8cLADDPes7ZDtKj4dTK+ERtLBomEzhRPLWklJn4VKOwjre9/k8GNd/e9DYxpfuzcxbXPQ==
-  dependencies:
-    "@ethersproject/abi" "^5.1.2"
-    "@metamask/eth-sig-util" "^4.0.0"
-    "@nomicfoundation/ethereumjs-block" "5.0.2"
-    "@nomicfoundation/ethereumjs-blockchain" "7.0.2"
-    "@nomicfoundation/ethereumjs-common" "4.0.2"
-    "@nomicfoundation/ethereumjs-evm" "2.0.2"
-    "@nomicfoundation/ethereumjs-rlp" "5.0.2"
-    "@nomicfoundation/ethereumjs-statemanager" "2.0.2"
-    "@nomicfoundation/ethereumjs-trie" "6.0.2"
-    "@nomicfoundation/ethereumjs-tx" "5.0.2"
-    "@nomicfoundation/ethereumjs-util" "9.0.2"
-    "@nomicfoundation/ethereumjs-vm" "7.0.2"
-    "@nomicfoundation/solidity-analyzer" "^0.1.0"
-    "@sentry/node" "^5.18.1"
-    "@types/bn.js" "^5.1.0"
-    "@types/lru-cache" "^5.1.0"
-    adm-zip "^0.4.16"
-    aggregate-error "^3.0.0"
-    ansi-escapes "^4.3.0"
-    chalk "^2.4.2"
-    chokidar "^3.4.0"
-    ci-info "^2.0.0"
-    debug "^4.1.1"
-    enquirer "^2.3.0"
-    env-paths "^2.2.0"
-    ethereum-cryptography "^1.0.3"
-    ethereumjs-abi "^0.6.8"
-    find-up "^2.1.0"
-    fp-ts "1.19.3"
-    fs-extra "^7.0.1"
-    glob "7.2.0"
-    immutable "^4.0.0-rc.12"
-    io-ts "1.10.4"
-    keccak "^3.0.2"
-    lodash "^4.17.11"
-    mnemonist "^0.38.0"
-    mocha "^10.0.0"
-    p-map "^4.0.0"
-    raw-body "^2.4.1"
-    resolve "1.17.0"
-    semver "^6.3.0"
-    solc "0.7.3"
-    source-map-support "^0.5.13"
-    stacktrace-parser "^0.1.10"
-    tsort "0.0.1"
-    undici "^5.14.0"
     uuid "^8.3.2"
     ws "^7.4.6"
 
