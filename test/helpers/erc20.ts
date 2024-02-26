@@ -17,7 +17,7 @@ export async function transfer(
     signer: Signer,
     tokenAddress: string,
     destAddress: string,
-    amount: string
+    amount: bigint
 ): Promise<void> {
     const contract = new ethers.Contract(tokenAddress, ERC20ABI, signer)
     await contract.transfer(destAddress, amount)

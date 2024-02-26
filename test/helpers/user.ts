@@ -45,7 +45,7 @@ export class User {
         return ethers.provider.getSigner(this.address)
     }
 
-    async donorToken(symbol: string, amount: string): Promise<void> {
+    async donorToken(symbol: string, amount: bigint): Promise<void> {
         const donors: Record<string, string> = {
             DAI: '0x075e72a5eDf65F0A5f44699c7654C1a76941Ddc8',
             USDT: '0x5041ed759Dd4aFc3a72b8192C143F72f4724081A',

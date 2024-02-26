@@ -23,12 +23,14 @@
         "test": "hardhat test --parallel"
     },
     "dependencies": {
-        "@1inch/fusion-sdk": "^0.0.5",
-        "@1inch/limit-order-protocol-contract": "^3.0.1",
+        "@1inch/fusion-sdk": "^0.1.14",
         "@1inch/permit-signed-approvals-utils": "^1.4.8",
-        "@1inch/solidity-utils": "2.2.6",
         "@metamask/eth-sig-util": "^4.0.1",
-        "@openzeppelin/contracts": "4.8.0"
+        "@1inch/delegating": "1.1.0",
+        "@1inch/limit-order-protocol-contract": "4.0.0-prerelease-19",
+        "@1inch/solidity-utils": "3.8.0",
+        "@1inch/st1inch": "2.2.0",
+        "@openzeppelin/contracts": "5.0.1"
     },
     "devDependencies": {
         "hardhat-tracer": "^1.2.1",
