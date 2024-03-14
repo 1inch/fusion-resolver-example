@@ -13,7 +13,9 @@ yarn
 NODE_URL=https://pass-eth-node-url-here.com yarn test
 ```
 
+If you want to run test which uses 1inch API, you should provide dev token as `ONE_INCH_API_KEY` param. It can be retrieved at https://portal.1inch.dev/dashboard
+
 ## Examples
 - [Contract example](./contracts/ResolverExample.sol)
-- [settleOrders examples](./test/Settlement.ts)
+- [Settle orders examples](./test/Settlement.ts)
 

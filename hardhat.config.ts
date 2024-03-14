@@ -1,30 +1,35 @@
-import '@nomiclabs/hardhat-etherscan'
-import '@nomiclabs/hardhat-waffle'
-import {config as dotEnvConfig} from 'dotenv'
+import { HardhatUserConfig } from 'hardhat/types';
+import { config as dotEnvConfig } from 'dotenv';
+import '@typechain/hardhat';
+import '@nomicfoundation/hardhat-ethers';
+import '@nomicfoundation/hardhat-chai-matchers';
 
-import 'hardhat-typechain'
-import 'hardhat-jest-plugin'
-import 'hardhat-tracer'
-import {HardhatUserConfig} from 'hardhat/types'
-
-dotEnvConfig()
+dotEnvConfig();
 
 const config: HardhatUserConfig = {
     defaultNetwork: 'hardhat',
     solidity: {
-        compilers: [{version: '0.8.20', settings: {}}]
+        compilers: [{
+            version: '0.8.20', settings: {
+                optimizer: {
+                    enabled: true
+                },
+                evmVersion: 'shanghai',
+                viaIR: true
+            }
+        }]
     },
     networks: {
         hardhat: {
             forking: {
-                // eslint-disable-next-line
                 enabled: true,
                 url: process.env.NODE_URL
             },
-            chainId: 1
+            chainId: 1,
+            hardfork: 'shanghai'
         },
         localhost: {}
     }
-}
+};
 
-export default config
+export default config;
