@@ -2,8 +2,8 @@ import {
     OneInchApiConfig,
     OneInchApiSwapResponse,
     OneInchSwapParams
-} from './types';
-import axios from 'axios';
+} from './types'
+import axios from 'axios'
 
 export class OneInchApi {
     constructor(private readonly config: OneInchApiConfig) {}
@@ -11,11 +11,11 @@ export class OneInchApi {
     async requestSwapData(
         params: OneInchSwapParams
     ): Promise<OneInchApiSwapResponse> {
-        const req = `${this.config.url}/swap/v5.2/${this.config.network}/swap`;
+        const req = `${this.config.url}/swap/v6.0/${this.config.network}/swap`
 
-        const { data } = await axios.get(req, {
+        const {data} = await axios.get(req, {
             headers: {
-                'Authorization': `Bearer ${this.config.token}`
+                Authorization: `Bearer ${this.config.token}`
             },
             params: {
                 src: params.fromToken,
@@ -23,11 +23,13 @@ export class OneInchApi {
                 amount: params.amount,
                 from: params.fromAddress,
                 slippage: params.slippage,
-                protocols: params.protocols?.length ? params.protocols.join(',') : undefined,
+                protocols: params.protocols?.length
+                    ? params.protocols.join(',')
+                    : undefined,
                 disableEstimate: !!params.disableEstimate
             }
-        });
+        })
 
-        return data;
+        return data
     }
 }
