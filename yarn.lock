@@ -7,12 +7,17 @@
   resolved "https://registry.yarnpkg.com/@1inch/byte-utils/-/byte-utils-2.0.0.tgz#63bc5159b508db321546369108eb34f1fa8eb080"
   integrity sha512-CcEsI6At09oqWDFrZNUTokbiOVUG0HNkkAPIhHo6rMPG+1m4Zls+kSWtotFUpy7tp0PUby/PmrOkqZgk/hFq1A==
 
-"@1inch/fusion-sdk@1.0.1-rc.6":
-  version "1.0.1-rc.6"
-  resolved "https://registry.yarnpkg.com/@1inch/fusion-sdk/-/fusion-sdk-1.0.1-rc.6.tgz#a204ce43b5e4a1abbf2bae060b152352f2c096a3"
-  integrity sha512-K11hBWjdy5fGQDJ8erx/uzZwvi3EiIQ6kma1XrFlwQ5JFMPatz/Rtk6XKRU590ppFRZoUQ7Brye7kKwrFO6m9Q==
+"@1inch/byte-utils@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@1inch/byte-utils/-/byte-utils-2.1.0.tgz#186167bdb5abb121a59ead030379c36702db9c95"
+  integrity sha512-Exyt8hyX0SyJyikWvq9Xw8mFAf/qhYY5bHFW3KgWKpoMZKTK6BGzHptE224/i5pt1TPsWUA4M8oLHvPw9+CKjQ==
+
+"@1inch/fusion-sdk@1.0.1-rc.7":
+  version "1.0.1-rc.7"
+  resolved "https://registry.yarnpkg.com/@1inch/fusion-sdk/-/fusion-sdk-1.0.1-rc.7.tgz#aaaa9a03df16ef0c3f59a3a0d7ecd9ef13d4a46f"
+  integrity sha512-V3BGWXM9IdjW6C4jn2d05QJe/p3VcI0pPWzFjsrYmxNTDSTasLTtmzWyjjkD2SLoXewbaqg7VN+cX22p8MP5Kw==
   dependencies:
-    "@1inch/byte-utils" "2.0.0"
+    "@1inch/byte-utils" "2.1.0"
     "@1inch/limit-order-sdk" "4.2.0"
     "@metamask/eth-sig-util" "^5.0.2"
     bn.js "^5.2.1"

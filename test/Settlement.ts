@@ -34,7 +34,7 @@ describe('Settle Orders', async function () {
     const whitelist = [
         {
             address: new Address(resolverEOA.address),
-            delay: 0n
+            allowFrom: 0n
         }
     ]
     before(async function () {
