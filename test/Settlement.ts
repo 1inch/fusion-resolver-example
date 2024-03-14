@@ -1,142 +1,169 @@
 import {ethers} from 'hardhat'
-import {ResolverExample, ResolverExample__factory} from '../typechain'
+import {ResolverExample, ResolverExample__factory} from '../typechain-types'
 import {
-    ONE_INCH_ROUTER_V5,
-    SETTLEMENT_CONTRACT,
+    ONE_INCH_LOP_V4,
+    SETTLEMENT_EXTENSION,
     TOKENS
 } from './helpers/constants'
-import {getChainId, nowSec, parseAmount} from './helpers/utils'
+import {getChainId, nowSec, parseAmount, randomBigInt} from './helpers/utils'
 import {createUsers} from './helpers/accounts'
 import {
-    AuctionSalt,
-    AuctionSuffix,
+    Address,
+    AmountMode,
+    AuctionDetails,
     FusionOrder,
+    Interaction,
+    LimitOrderContract,
     NetworkEnum,
-    Settlement
+    TakerTraits
 } from '@1inch/fusion-sdk'
 import {expect} from 'chai'
 import {balanceOf, encodeInfinityApprove, tokenName} from './helpers/erc20'
 import {OneInchApi} from './helpers/1inch'
+import {AbiCoder} from 'ethers'
+import * as process from 'process'
 import {buildDaiLikePermit, buildPermit} from './helpers/permit'
 import {ChainId} from '@1inch/permit-signed-approvals-utils'
 
 // eslint-disable-next-line max-lines-per-function
-describe('Settle Orders', function () {
+describe('Settle Orders', async function () {
     let resolverContract: ResolverExample
-
+    let resolverAddress: string
     const [resolverEOA, userA, userB] = createUsers()
 
-    beforeEach(async function () {
+    const whitelist = [
+        {
+            address: new Address(resolverEOA.address),
+            delay: 0n
+        }
+    ]
+    before(async function () {
         const chainId = await getChainId()
 
-        if (chainId !== 1) {
+        if (chainId !== 1n) {
             throw new Error(
                 'tests only working with ethereum mainnet fork (chainId == 1)'
             )
         }
 
-        const ResolverExample = (await ethers.getContractFactory(
+        const ResolverExample = (await ethers.getContractFactory<
+            [string, string],
+            ResolverExample
+        >(
             'ResolverExample',
-            resolverEOA.getSigner()
+            await resolverEOA.getSigner()
         )) as ResolverExample__factory
 
-        resolverContract = await ResolverExample.deploy(SETTLEMENT_CONTRACT)
+        resolverContract = await ResolverExample.deploy(
+            SETTLEMENT_EXTENSION,
+            ONE_INCH_LOP_V4
+        )
+        await resolverContract.waitForDeployment()
+        resolverContract = resolverContract.connect(
+            await resolverEOA.getSigner()
+        ) // call contract from owner
+        resolverAddress = await resolverContract.getAddress()
 
         await userA.donorToken('WETH', parseAmount('100'))
         await userA.donorToken('DAI', parseAmount('1000000'))
         await userB.donorToken('USDC', parseAmount('1000000', 6))
         await userB.donorToken('1INCH', parseAmount('100000'))
 
-        await userA.unlimitedApprove('WETH', ONE_INCH_ROUTER_V5)
-        await userB.unlimitedApprove('USDC', ONE_INCH_ROUTER_V5)
+        await userA.unlimitedApprove('WETH', ONE_INCH_LOP_V4)
+        await userB.unlimitedApprove('USDC', ONE_INCH_LOP_V4)
         // -- for DAI we'll use permit
         // -- for 1INCH we'll use permit
+
+        // Approve all tokens from Resolver contract to Limit Order Protocol
+        await Promise.all(
+            Object.values(TOKENS).map((tokenAddress) =>
+                resolverContract.approve(tokenAddress, ONE_INCH_LOP_V4)
+            )
+        )
     })
 
     it('should resolve order through 1inch Router swap', async function () {
-        const salt = new AuctionSalt({
-            auctionStartTime: nowSec(),
+        const devToken = process.env.ONE_INCH_API_KEY
+
+        if (!devToken) {
+            this.skip()
+        }
+
+        const auctionDetails = new AuctionDetails({
+            startTime: nowSec(),
             initialRateBump: 0,
-            duration: 180,
-            bankFee: '0'
+            duration: 180n,
+            points: []
         })
 
-        const suffix = new AuctionSuffix({
-            points: [],
-            whitelist: [
-                {
-                    address: resolverEOA.address,
-                    allowance: 0
-                }
-            ]
-        })
-
-        const orderA = new FusionOrder(
+        const orderA = FusionOrder.new(
+            new Address(SETTLEMENT_EXTENSION),
             {
-                makerAsset: TOKENS.WETH,
-                takerAsset: TOKENS.USDC,
+                makerAsset: new Address(TOKENS.WETH),
+                takerAsset: new Address(TOKENS.USDC),
                 makingAmount: parseAmount('1'),
                 takingAmount: parseAmount('1000', 6),
-                maker: userA.address,
-                allowedSender: SETTLEMENT_CONTRACT
+                maker: new Address(userA.address)
             },
-            salt,
-            suffix
+            {
+                auction: auctionDetails,
+                whitelist
+            }
         )
 
-        const settlement = new Settlement({
-            resolverContract: resolverContract.address,
-            settlementContract: SETTLEMENT_CONTRACT
-        })
-
         const oneInchApi = new OneInchApi({
-            url: 'https://api.1inch.io',
-            network: NetworkEnum.ETHEREUM
+            url: 'https://api.1inch.dev',
+            network: NetworkEnum.ETHEREUM,
+            token: devToken
         })
 
         const {tx} = await oneInchApi.requestSwapData({
             fromToken: TOKENS.WETH,
             toToken: TOKENS.USDC,
-            amount: orderA.makingAmount,
-            fromAddress: resolverContract.address,
+            amount: orderA.makingAmount.toString(),
+            fromAddress: resolverAddress,
             disableEstimate: true,
             slippage: 1,
             protocols: ['UNISWAP_V2']
         })
 
-        const targets = [TOKENS.WETH, ONE_INCH_ROUTER_V5]
-        const callDataList = [
-            encodeInfinityApprove(ONE_INCH_ROUTER_V5),
-            tx.data
-        ]
+        const targets = [TOKENS.WETH, tx.to]
+        const callDataList = [encodeInfinityApprove(tx.to), tx.data]
 
-        const resolverExecutionBytes = ethers.utils.defaultAbiCoder.encode(
+        const resolverExecutionBytes = AbiCoder.defaultAbiCoder().encode(
             ['address[]', 'bytes[]'],
             [targets, callDataList]
         )
 
-        const calldata = settlement.encodeSettleOrders(
-            [
-                {
-                    order: orderA.build(),
-                    makingAmount: parseAmount('1'),
-                    takingAmount: '0',
-                    thresholdAmount: parseAmount('1000', 6),
-                    target: resolverContract.address,
-                    signature: userA.signFusionOrder(orderA)
-                }
-            ],
-            resolverExecutionBytes
+        const takerTraits = TakerTraits.default()
+            .setExtension(orderA.extension)
+            .setInteraction(
+                new Interaction(
+                    new Address(resolverAddress),
+                    resolverExecutionBytes
+                )
+            )
+            .setAmountMode(AmountMode.maker)
+            .setAmountThreshold(parseAmount('1000', 6))
+
+        const calldata = LimitOrderContract.getFillOrderArgsCalldata(
+            orderA.build(),
+            userA.signFusionOrder(orderA),
+            takerTraits,
+            parseAmount('1')
         )
 
         const resolverBalanceBefore = await balanceOf(
             TOKENS.USDC,
-            resolverContract.address
+            resolverAddress
         )
 
         const transaction = await resolverEOA.sendTransaction({
-            to: SETTLEMENT_CONTRACT,
-            data: calldata,
+            to: resolverAddress,
+            data: resolverContract.interface.encodeFunctionData(
+                'settleOrders',
+                [calldata]
+            ),
             value: '0'
         })
 
@@ -144,228 +171,241 @@ describe('Settle Orders', function () {
 
         const resolverBalanceAfter = await balanceOf(
             TOKENS.USDC,
-            resolverContract.address
+            resolverAddress
         )
 
-        const balanceDiff = resolverBalanceAfter.sub(resolverBalanceBefore)
+        const balanceDiff = resolverBalanceAfter - resolverBalanceBefore
 
         expect(receipt.status).to.be.eq(1, 'transaction failed')
-        expect(balanceDiff.gt(0), 'wrong profit').to.be.true
+        expect(balanceDiff > 0n, 'wrong profit').to.be.true
     })
 
     it('should match opposite orders with permits', async function () {
-        const salt = new AuctionSalt({
-            auctionStartTime: nowSec(),
+        const auctionDetails = new AuctionDetails({
+            startTime: nowSec(),
             initialRateBump: 0,
-            duration: 180,
-            bankFee: '0'
+            duration: 180n,
+            points: []
         })
 
-        const suffix = new AuctionSuffix({
-            points: [],
-            whitelist: [
-                {
-                    address: resolverEOA.address,
-                    allowance: 0
-                }
-            ]
-        })
-
-        const permitNonce = await userA.getPermitNonce(
-            'DAI',
-            ONE_INCH_ROUTER_V5
-        )
+        const permitNonce = await userA.getPermitNonce('DAI', ONE_INCH_LOP_V4)
 
         const permit = await buildDaiLikePermit({
             userPrivateKey: userA.PK,
-            spender: ONE_INCH_ROUTER_V5,
-            value: parseAmount('100'),
-            nonce: permitNonce.toNumber(),
+            spender: ONE_INCH_LOP_V4,
+            value: parseAmount('100').toString(),
+            nonce: Number(permitNonce),
             tokenName: await tokenName(TOKENS.DAI),
             tokenAddress: TOKENS.DAI,
             chainId: ChainId.etherumMainnet
         })
 
-        const orderA = new FusionOrder(
+        const orderA = FusionOrder.new(
+            new Address(SETTLEMENT_EXTENSION),
             {
-                makerAsset: TOKENS.DAI,
-                takerAsset: TOKENS['1INCH'],
+                makerAsset: new Address(TOKENS.DAI),
+                takerAsset: new Address(TOKENS['1INCH']),
                 makingAmount: parseAmount('100'),
                 takingAmount: parseAmount('10'),
-                maker: userA.address,
-                allowedSender: SETTLEMENT_CONTRACT
+                maker: new Address(userA.address)
             },
-            salt,
-            suffix,
             {
-                permit: TOKENS.DAI + permit.substring(2)
+                auction: auctionDetails,
+                whitelist
+            },
+            {
+                permit
             }
         )
 
         const permitInchNonce = await userB.getPermitNonce(
             '1INCH',
-            ONE_INCH_ROUTER_V5
+            ONE_INCH_LOP_V4
         )
 
         const permitInch = await buildPermit({
             userPrivateKey: userB.PK,
-            spender: ONE_INCH_ROUTER_V5,
-            value: parseAmount('100'),
-            nonce: permitInchNonce.toNumber(),
+            spender: ONE_INCH_LOP_V4,
+            value: parseAmount('100').toString(),
+            nonce: Number(permitInchNonce),
             tokenName: await tokenName(TOKENS['1INCH']),
             tokenAddress: TOKENS['1INCH'],
             chainId: ChainId.etherumMainnet
         })
 
-        const orderB = new FusionOrder(
+        const orderB = FusionOrder.new(
+            new Address(SETTLEMENT_EXTENSION),
             {
-                makerAsset: TOKENS['1INCH'],
-                takerAsset: TOKENS.DAI,
+                makerAsset: new Address(TOKENS['1INCH']),
+                takerAsset: new Address(TOKENS.DAI),
                 makingAmount: parseAmount('20'),
                 takingAmount: parseAmount('100'),
-                maker: userB.address,
-                allowedSender: SETTLEMENT_CONTRACT
+                maker: new Address(userB.address)
             },
-            salt,
-            suffix,
             {
-                permit: TOKENS['1INCH'] + permitInch.substring(2)
+                auction: auctionDetails,
+                whitelist
+            },
+            {
+                permit: permitInch
             }
         )
 
-        const settlement = new Settlement({
-            resolverContract: resolverContract.address,
-            settlementContract: SETTLEMENT_CONTRACT
-        })
+        // Fill second order in callback for first order
+        const targets = [ONE_INCH_LOP_V4]
+        const callDataList = [
+            LimitOrderContract.getFillOrderArgsCalldata(
+                orderB.build(),
+                userB.signFusionOrder(orderB),
+                TakerTraits.default()
+                    .setExtension(orderB.extension)
+                    .setAmountMode(AmountMode.maker)
+                    .setAmountThreshold(parseAmount('100')),
+                parseAmount('20')
+            )
+        ]
 
-        const calldata = settlement.encodeSettleOrders(
-            [
-                {
-                    order: orderA.build(),
-                    makingAmount: parseAmount('100'),
-                    takingAmount: '0',
-                    thresholdAmount: parseAmount('10'),
-                    target: resolverContract.address,
-                    signature: userA.signFusionOrder(orderA)
-                },
-                {
-                    order: orderB.build(),
-                    makingAmount: parseAmount('20'),
-                    takingAmount: '0',
-                    thresholdAmount: parseAmount('100'),
-                    target: resolverContract.address,
-                    signature: userB.signFusionOrder(orderB)
-                }
-            ],
-            ''
+        const resolverExecutionBytes = AbiCoder.defaultAbiCoder().encode(
+            ['address[]', 'bytes[]'],
+            [targets, callDataList]
+        )
+
+        const calldata = LimitOrderContract.getFillOrderArgsCalldata(
+            orderA.build(),
+            userA.signFusionOrder(orderA),
+            TakerTraits.default()
+                .setExtension(orderA.extension)
+                .setInteraction(
+                    new Interaction(
+                        new Address(resolverAddress),
+                        resolverExecutionBytes
+                    )
+                )
+                .setAmountMode(AmountMode.maker)
+                .setAmountThreshold(parseAmount('10')),
+            parseAmount('100')
         )
 
         const resolverBalanceBefore = await balanceOf(
             TOKENS['1INCH'],
-            resolverContract.address
+            resolverAddress
         )
 
-        const transaction = await resolverEOA.sendTransaction({
-            to: SETTLEMENT_CONTRACT,
-            data: calldata,
+        const tx = await resolverEOA.sendTransaction({
+            to: resolverAddress,
+            data: resolverContract.interface.encodeFunctionData(
+                'settleOrders',
+                [calldata]
+            ),
             value: '0'
         })
 
-        const receipt = await transaction.wait()
+        const receipt = await tx.wait()
 
         const resolverBalanceAfter = await balanceOf(
             TOKENS['1INCH'],
-            resolverContract.address
+            resolverAddress
         )
 
-        const balanceDiff = resolverBalanceAfter
-            .sub(resolverBalanceBefore)
-            .toString()
         const profit = parseAmount('10')
+        const balanceDiff = (
+            resolverBalanceAfter - resolverBalanceBefore
+        ).toString()
 
         expect(receipt.status).to.be.eq(1, 'transaction failed')
         expect(balanceDiff).to.be.eq(profit, 'wrong profit')
     })
 
     it('should match opposite orders', async function () {
-        const salt = new AuctionSalt({
-            auctionStartTime: nowSec(),
+        const auctionDetails = new AuctionDetails({
+            startTime: nowSec(),
             initialRateBump: 0,
-            duration: 180,
-            bankFee: '0'
+            duration: 180n,
+            points: []
         })
 
-        const suffix = new AuctionSuffix({
-            points: [],
-            whitelist: [
-                {
-                    address: resolverEOA.address,
-                    allowance: 0
-                }
-            ]
-        })
-
-        const orderA = new FusionOrder(
+        const orderA = FusionOrder.new(
+            new Address(SETTLEMENT_EXTENSION),
             {
-                makerAsset: TOKENS.WETH,
-                takerAsset: TOKENS.USDC,
+                makerAsset: new Address(TOKENS.WETH),
+                takerAsset: new Address(TOKENS.USDC),
                 makingAmount: parseAmount('1'),
                 takingAmount: parseAmount('1000', 6),
-                maker: userA.address,
-                allowedSender: SETTLEMENT_CONTRACT
+                maker: new Address(userA.address)
             },
-            salt,
-            suffix
+            {
+                auction: auctionDetails,
+                whitelist
+            },
+            {
+                nonce: randomBigInt()
+            }
         )
 
-        const orderB = new FusionOrder(
+        const orderB = FusionOrder.new(
+            new Address(SETTLEMENT_EXTENSION),
             {
-                makerAsset: TOKENS.USDC,
-                takerAsset: TOKENS.WETH,
+                makerAsset: new Address(TOKENS.USDC),
+                takerAsset: new Address(TOKENS.WETH),
                 makingAmount: parseAmount('1010', 6),
                 takingAmount: parseAmount('1'),
-                maker: userB.address,
-                allowedSender: SETTLEMENT_CONTRACT
+                maker: new Address(userB.address)
             },
-            salt,
-            suffix
+            {
+                auction: auctionDetails,
+                whitelist
+            },
+            {
+                nonce: randomBigInt()
+            }
         )
 
-        const settlement = new Settlement({
-            resolverContract: resolverContract.address,
-            settlementContract: SETTLEMENT_CONTRACT
-        })
+        // Fill second order in callback for first order
+        const targets = [ONE_INCH_LOP_V4]
+        const callDataList = [
+            LimitOrderContract.getFillOrderArgsCalldata(
+                orderB.build(),
+                userB.signFusionOrder(orderB),
+                TakerTraits.default()
+                    .setExtension(orderB.extension)
+                    .setAmountMode(AmountMode.maker)
+                    .setAmountThreshold(parseAmount('1')),
+                parseAmount('1010', 6)
+            )
+        ]
 
-        const calldata = settlement.encodeSettleOrders(
-            [
-                {
-                    order: orderA.build(),
-                    makingAmount: parseAmount('1'),
-                    takingAmount: '0',
-                    thresholdAmount: parseAmount('1000', 6),
-                    target: resolverContract.address,
-                    signature: userA.signFusionOrder(orderA)
-                },
-                {
-                    order: orderB.build(),
-                    makingAmount: parseAmount('1010', 6),
-                    takingAmount: '0',
-                    thresholdAmount: parseAmount('1'),
-                    target: resolverContract.address,
-                    signature: userB.signFusionOrder(orderB)
-                }
-            ],
-            ''
+        const resolverExecutionBytes = AbiCoder.defaultAbiCoder().encode(
+            ['address[]', 'bytes[]'],
+            [targets, callDataList]
+        )
+
+        const calldata = LimitOrderContract.getFillOrderArgsCalldata(
+            orderA.build(),
+            userA.signFusionOrder(orderA),
+            TakerTraits.default()
+                .setExtension(orderA.extension)
+                .setInteraction(
+                    new Interaction(
+                        new Address(resolverAddress),
+                        resolverExecutionBytes
+                    )
+                )
+                .setAmountMode(AmountMode.maker)
+                .setAmountThreshold(parseAmount('1000', 6)),
+            parseAmount('1')
         )
 
         const resolverBalanceBefore = await balanceOf(
             TOKENS.USDC,
-            resolverContract.address
+            resolverAddress
         )
 
         const tx = await resolverEOA.sendTransaction({
-            to: SETTLEMENT_CONTRACT,
-            data: calldata,
+            to: resolverAddress,
+            data: resolverContract.interface.encodeFunctionData(
+                'settleOrders',
+                [calldata]
+            ),
             value: '0'
         })
 
@@ -373,13 +413,13 @@ describe('Settle Orders', function () {
 
         const resolverBalanceAfter = await balanceOf(
             TOKENS.USDC,
-            resolverContract.address
+            resolverAddress
         )
 
         const profit = parseAmount('10', 6)
-        const balanceDiff = resolverBalanceAfter
-            .sub(resolverBalanceBefore)
-            .toString()
+        const balanceDiff = (
+            resolverBalanceAfter - resolverBalanceBefore
+        ).toString()
 
         expect(receipt.status).to.be.eq(1, 'transaction failed')
         expect(balanceDiff).to.be.eq(profit, 'wrong profit')

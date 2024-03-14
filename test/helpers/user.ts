@@ -1,14 +1,16 @@
-import {BigNumber, Signer, Wallet} from 'ethers'
+import {
+    computeAddress,
+    Signer,
+    TransactionResponse,
+    Wallet,
+    TransactionRequest,
+    SigningKey
+} from 'ethers'
 import {ethers} from 'hardhat'
 import {TOKENS, UNLIMITED_AMOUNT} from './constants'
 import {approve, balanceOf, transfer} from './erc20'
 import {FusionOrder} from '@1inch/fusion-sdk'
 import {signTypedData, SignTypedDataVersion} from '@metamask/eth-sig-util'
-import {Deferrable} from '@ethersproject/properties'
-import {
-    TransactionRequest,
-    TransactionResponse
-} from '@ethersproject/abstract-provider'
 import {getPermitNonce} from './permit'
 
 export class User {
@@ -17,17 +19,16 @@ export class User {
     private readonly signer: Wallet
 
     constructor(public readonly privateKey: Buffer) {
-        this.address = ethers.utils.computeAddress(privateKey)
-        this.signer = new Wallet(privateKey, ethers.provider)
+        const signingKey = new SigningKey(privateKey)
+        this.address = computeAddress(signingKey)
+        this.signer = new Wallet(signingKey, ethers.provider)
     }
 
     get PK(): string {
         return '0x' + this.privateKey.toString('hex')
     }
 
-    sendTransaction(
-        tx: Deferrable<TransactionRequest>
-    ): Promise<TransactionResponse> {
+    sendTransaction(tx: TransactionRequest): Promise<TransactionResponse> {
         return this.signer.sendTransaction(tx)
     }
 
@@ -41,13 +42,13 @@ export class User {
         })
     }
 
-    getSigner(): Signer {
+    async getSigner(): Promise<Signer> {
         return ethers.provider.getSigner(this.address)
     }
 
-    async donorToken(symbol: string, amount: string): Promise<void> {
+    async donorToken(symbol: string, amount: bigint): Promise<void> {
         const donors: Record<string, string> = {
-            DAI: '0x075e72a5eDf65F0A5f44699c7654C1a76941Ddc8',
+            DAI: '0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503',
             USDT: '0x5041ed759Dd4aFc3a72b8192C143F72f4724081A',
             USDC: '0x5041ed759Dd4aFc3a72b8192C143F72f4724081A',
             WETH: '0x8EB8a3b98659Cce290402893d0123abb75E3ab28',
@@ -67,7 +68,7 @@ export class User {
         }
 
         await ethers.provider.send('hardhat_impersonateAccount', [donor])
-        const tmpSigner = ethers.provider.getSigner(donor)
+        const tmpSigner = await ethers.provider.getSigner(donor)
 
         await transfer(tmpSigner, tokenAddress, this.address, amount)
     }
@@ -87,11 +88,11 @@ export class User {
     async getPermitNonce(
         tokenSymbol: string,
         spender: string
-    ): Promise<BigNumber> {
+    ): Promise<bigint> {
         return getPermitNonce(TOKENS[tokenSymbol], spender)
     }
 
-    async balance(symbol: string): Promise<BigNumber> {
+    async balance(symbol: string): Promise<bigint> {
         return balanceOf(TOKENS[symbol], this.address)
     }
 }

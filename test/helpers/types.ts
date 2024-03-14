@@ -13,15 +13,12 @@ export type OneInchSwapParams = {
 
 export type OneInchApiConfig = {
     url: string
-    network: NetworkEnum
+    network: NetworkEnum,
+    token: string
 }
 
 export type OneInchApiSwapResponse = {
-    fromToken: TokenInfo
-    toToken: TokenInfo
-    toTokenAmount: string
-    fromTokenAmount: string
-    protocols: PathView[][][]
+    toAmount: string
     tx: Tx
 }
 
@@ -33,23 +30,6 @@ export type PermitParams = {
     tokenName: string
     tokenAddress: string
     chainId: ChainId
-}
-
-export type PathView = {
-    name: string
-    part: number
-    fromTokenAddress: string
-    toTokenAddress: string
-}
-
-export interface TokenInfo {
-    symbol: string
-    name: string
-    address: string
-    decimals: number
-    logoURI: string
-    isCustom?: boolean
-    isFOT?: boolean
 }
 
 export type Tx = {

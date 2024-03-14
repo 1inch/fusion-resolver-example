@@ -1,15 +1,15 @@
 import {ethers} from 'hardhat'
 import ERC20ABI from '../abi/ERC20.abi.json'
-import {BigNumber} from 'ethers'
 import {PermitParams} from './types'
 import {EthersPrivateKeyProviderConnector} from './ethers-provider.connector'
 import {Eip2612PermitUtils} from '@1inch/permit-signed-approvals-utils'
 import {PERMIT_VERSION_V2_TOKENS} from './constants'
+import {computeAddress} from 'ethers'
 
 export function getPermitNonce(
     tokenAddress: string,
     spender: string
-): Promise<BigNumber> {
+): Promise<bigint> {
     const contract = new ethers.Contract(
         tokenAddress,
         ERC20ABI,
@@ -31,7 +31,7 @@ export async function buildDaiLikePermit(
 
     return eip2612PermitUtils.buildDaiLikePermitCallData(
         {
-            holder: ethers.utils.computeAddress(params.userPrivateKey),
+            holder: computeAddress(params.userPrivateKey),
             spender: params.spender,
             value: params.value,
             nonce: params.nonce,
@@ -54,7 +54,7 @@ export async function buildPermit(params: PermitParams): Promise<string> {
 
     return eip2612PermitUtils.buildPermitCallData(
         {
-            owner: ethers.utils.computeAddress(params.userPrivateKey),
+            owner: computeAddress(params.userPrivateKey),
             spender: params.spender,
             value: params.value,
             nonce: params.nonce,
