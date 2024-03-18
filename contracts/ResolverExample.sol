@@ -18,7 +18,6 @@ contract ResolverExample is ITakerInteraction {
     using SafeERC20 for IERC20;
     using AddressLib for Address;
 
-    address private immutable _SETTLEMENT_EXTENSION;
     IOrderMixin private immutable _LOPV4;
     address private immutable _OWNER;
 
@@ -27,8 +26,7 @@ contract ResolverExample is ITakerInteraction {
         _;
     }
 
-    constructor(address settlementExtension, IOrderMixin limitOrderProtocol) {
-        _SETTLEMENT_EXTENSION = settlementExtension;
+    constructor(IOrderMixin limitOrderProtocol) {
         _LOPV4 = limitOrderProtocol;
         _OWNER = msg.sender;
     }

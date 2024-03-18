@@ -31,12 +31,7 @@ describe('Settle Orders', async function () {
     let resolverAddress: string
     const [resolverEOA, userA, userB] = createUsers()
 
-    const whitelist = [
-        {
-            address: new Address(resolverEOA.address),
-            allowFrom: 0n
-        }
-    ]
+    const whitelist = [] as {address: Address; allowFrom: bigint}[]
     before(async function () {
         const chainId = await getChainId()
 
@@ -54,15 +49,17 @@ describe('Settle Orders', async function () {
             await resolverEOA.getSigner()
         )) as ResolverExample__factory
 
-        resolverContract = await ResolverExample.deploy(
-            SETTLEMENT_EXTENSION,
-            ONE_INCH_LOP_V4
-        )
+        resolverContract = await ResolverExample.deploy(ONE_INCH_LOP_V4)
         await resolverContract.waitForDeployment()
         resolverContract = resolverContract.connect(
             await resolverEOA.getSigner()
         ) // call contract from owner
         resolverAddress = await resolverContract.getAddress()
+
+        whitelist.push({
+            address: new Address(resolverAddress),
+            allowFrom: 0n
+        })
 
         await userA.donorToken('WETH', parseAmount('100'))
         await userA.donorToken('DAI', parseAmount('1000000'))
@@ -107,7 +104,8 @@ describe('Settle Orders', async function () {
             },
             {
                 auction: auctionDetails,
-                whitelist
+                whitelist,
+                resolvingStartTime: 0n
             }
         )
 
@@ -211,7 +209,8 @@ describe('Settle Orders', async function () {
             },
             {
                 auction: auctionDetails,
-                whitelist
+                whitelist,
+                resolvingStartTime: 0n
             },
             {
                 permit
@@ -244,7 +243,8 @@ describe('Settle Orders', async function () {
             },
             {
                 auction: auctionDetails,
-                whitelist
+                whitelist,
+                resolvingStartTime: 0n
             },
             {
                 permit: permitInch
@@ -335,7 +335,8 @@ describe('Settle Orders', async function () {
             },
             {
                 auction: auctionDetails,
-                whitelist
+                whitelist,
+                resolvingStartTime: 0n
             },
             {
                 nonce: randomBigInt()
@@ -353,7 +354,8 @@ describe('Settle Orders', async function () {
             },
             {
                 auction: auctionDetails,
-                whitelist
+                whitelist,
+                resolvingStartTime: 0n
             },
             {
                 nonce: randomBigInt()

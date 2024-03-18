@@ -23,7 +23,7 @@
         "test": "hardhat test"
     },
     "dependencies": {
-        "@1inch/fusion-sdk": "1.0.1-rc.7",
+        "@1inch/fusion-sdk": "1.0.1-rc.10",
         "@1inch/limit-order-protocol-contract": "4.0.0",
         "@1inch/permit-signed-approvals-utils": "^1.4.8",
         "@1inch/solidity-utils": "3.8.0",
