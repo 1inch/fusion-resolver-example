@@ -29,6 +29,7 @@ export class User {
     }
 
     sendTransaction(tx: TransactionRequest): Promise<TransactionResponse> {
+        // priority is 0 to avoid - InvalidPriorityFee(): 0x8c331638,
         return this.signer.sendTransaction({...tx, maxPriorityFeePerGas: 0})
     }
 
