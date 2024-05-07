@@ -9,7 +9,7 @@ import {
 import {ethers} from 'hardhat'
 import {TOKENS, UNLIMITED_AMOUNT} from './constants'
 import {approve, balanceOf, transfer} from './erc20'
-import {FusionOrder} from '@1inch/fusion-sdk'
+import {FusionOrder, NetworkEnum} from '@1inch/fusion-sdk'
 import {signTypedData, SignTypedDataVersion} from '@metamask/eth-sig-util'
 import {getPermitNonce} from './permit'
 
@@ -29,7 +29,7 @@ export class User {
     }
 
     sendTransaction(tx: TransactionRequest): Promise<TransactionResponse> {
-        return this.signer.sendTransaction(tx)
+        return this.signer.sendTransaction({...tx, maxPriorityFeePerGas: 0})
     }
 
     signFusionOrder(order: FusionOrder): string {
@@ -37,7 +37,7 @@ export class User {
             privateKey: this.privateKey,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            data: order.getTypedData(),
+            data: order.getTypedData(NetworkEnum.ETHEREUM),
             version: SignTypedDataVersion.V4
         })
     }
