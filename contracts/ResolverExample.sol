@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+This code is provided “as is” without warranties of any kind. 1inch does not assume responsibility for its security, suitability, or fitness for any specific use. Any party using this code is solely responsible for conducting independent audits before deployment.
 
 pragma solidity ^0.8.20;
 
