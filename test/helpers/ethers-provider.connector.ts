@@ -4,7 +4,7 @@ import {AbiInput} from 'web3-utils'
 import {ProviderConnector} from '@1inch/permit-signed-approvals-utils/connector/provider.connector'
 import {AbiItem} from '@1inch/permit-signed-approvals-utils/model/abi.model'
 import {EIP712TypedData} from '@1inch/permit-signed-approvals-utils/model/eip712.model'
-import { AbiCoder, Interface, ParamType } from 'ethers';
+import {AbiCoder, Interface, ParamType} from 'ethers'
 
 export class EthersPrivateKeyProviderConnector implements ProviderConnector {
     private readonly privateKeyBuffer: Buffer

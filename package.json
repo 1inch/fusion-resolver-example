@@ -28,7 +28,7 @@
         "@1inch/permit-signed-approvals-utils": "^1.4.8",
         "@1inch/solidity-utils": "3.8.0",
         "@metamask/eth-sig-util": "^4.0.1",
-        "@openzeppelin/contracts": "5.0.1"
+        "@openzeppelin/contracts": "^5.0.2"
     },
     "devDependencies": {
         "@ethersproject/abi": "5.4.0",
@@ -63,6 +63,7 @@
         "jest-junit": "^15.0.0",
         "prettier": "^2.8.4",
         "prettier-plugin-solidity": "1.0.0-rc.1",
+        "solhint": "^6.0.0",
         "ts-jest": "^29.0.3",
         "ts-loader": "^9.2.6",
         "ts-node": "^10.7.0",
