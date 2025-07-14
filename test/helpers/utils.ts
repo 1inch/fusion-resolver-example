@@ -1,5 +1,5 @@
 import {ethers} from 'hardhat'
-import { parseUnits } from 'ethers';
+import {parseUnits} from 'ethers'
 
 export async function getChainId(): Promise<bigint> {
     return (await ethers.provider.getNetwork()).chainId

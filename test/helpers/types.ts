@@ -13,7 +13,7 @@ export type OneInchSwapParams = {
 
 export type OneInchApiConfig = {
     url: string
-    network: NetworkEnum,
+    network: NetworkEnum
     token: string
 }
 
