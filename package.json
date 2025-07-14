@@ -66,5 +66,12 @@
         "tsconfig-paths": "^3.11.0",
         "typechain": "^8.3.2",
         "typescript": "^4.9.5"
+    },
+    "resolutions": {
+        "@1inch/solidity-utils": "6.6.0",
+        "axios": "^0.30.0",
+        "elliptic": "^6.6.1",
+        "ws": "^8.18.1",
+        "@openzeppelin/contracts": "5.3.0"
     }
 }
