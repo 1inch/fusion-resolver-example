@@ -72,6 +72,7 @@
         "axios": "^0.30.0",
         "elliptic": "^6.6.1",
         "ws": "^8.18.1",
-        "@openzeppelin/contracts": "5.3.0"
+        "@openzeppelin/contracts": "5.3.0",
+        "cookie": "0.7.0"
     }
 }
