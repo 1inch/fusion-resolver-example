@@ -42,8 +42,6 @@ export function encodeInfinityApprove(spender: string): string {
     return (
         '0x095ea7b3' +
         spender.substring(2).padStart(64, '0') +
-        BigInt(UNLIMITED_AMOUNT)
-            .toString(16)
-            .padStart(64, '0')
+        BigInt(UNLIMITED_AMOUNT).toString(16).padStart(64, '0')
     )
 }
