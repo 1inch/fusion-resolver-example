@@ -28,7 +28,7 @@
         "@1inch/permit-signed-approvals-utils": "^1.5.2",
         "@1inch/solidity-utils": "6.6.0",
         "@metamask/eth-sig-util": "^4.0.1",
-        "@openzeppelin/contracts": "5.3.0"
+        "@openzeppelin/contracts": "5.4.0"
     },
     "devDependencies": {
         "@ethersproject/abi": "5.4.0",
@@ -72,7 +72,7 @@
         "axios": "^0.30.0",
         "elliptic": "^6.6.1",
         "ws": "^8.18.1",
-        "@openzeppelin/contracts": "5.3.0",
+        "@openzeppelin/contracts": "5.4.0",
         "cookie": "0.7.0"
     }
 }
