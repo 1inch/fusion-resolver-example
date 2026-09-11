@@ -74,7 +74,7 @@
         "ws": "^8.20.1",
         "@openzeppelin/contracts": "5.4.0",
         "cookie": "0.7.0",
-        "qs": "^6.15.2",
+        "qs": "^6.16.0",
         "serialize-javascript": "^7.0.5",
         "uuid": "^11.1.1",
         "fast-uri": "^3.1.5",
